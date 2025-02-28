@@ -1,0 +1,557 @@
+=====================STARTED FROM HERE =============
+
+df.createOrReplaceTempView("df")
+
++---+----------+------+-------------+--------------+-------+
+| id|     tdate|amount|     category|       product|spendby|
++---+----------+------+-------------+--------------+-------+
+|  0|06-26-2011| 300.4|     Exercise| GymnasticsPro|   cash|
+|  1|05-26-2011| 200.0|Exercise Band| Weightlifting| credit|
+|  2|06-01-2011| 300.4|     Exercise|Gymnastics Pro|   cash|
+|  3|06-05-2011| 100.0|   Gymnastics|         Rings| credit|
+|  4|12-17-2011| 300.0|  Team Sports|         Field|   cash|
+|  5|02-14-2011| 200.0|   Gymnastics|          NULL|   cash|
+|  6|06-05-2011| 100.0|     Exercise|         Rings| credit|
+|  7|12-17-2011| 300.0|  Team Sports|         Field|   cash|
+|  8|02-14-2011| 200.0|   Gymnastics|          NULL|   cash|
++---+----------+------+-------------+--------------+-------+
+
+---- Task with result -----started -----------------------------------
+
+spark.sql("select id,tdate from df").show()
+
++---+----------+
+| id|     tdate|
++---+----------+
+|  0|06-26-2011|
+|  1|05-26-2011|
+|  2|06-01-2011|
+|  3|06-05-2011|
+|  4|12-17-2011|
+|  5|02-14-2011|
+|  6|06-05-2011|
+|  7|12-17-2011|
+|  8|02-14-2011|
++---+----------+
+
+spark.sql("select * from df where category=’Exercise’").show()
++---+----------+------+--------+--------------+-------+
+| id|     tdate|amount|category|       product|spendby|
++---+----------+------+--------+--------------+-------+
+|  0|06-26-2011| 300.4|Exercise| GymnasticsPro|   cash|
+|  2|06-01-2011| 300.4|Exercise|Gymnastics Pro|   cash|
+|  6|06-05-2011| 100.0|Exercise|         Rings| credit|
++---+----------+------+--------+--------------+-------+
+
+spark.sql("select id,tdate,category,spendby from df where category='Exercise' and spendby ='cash' ").show()
+
++---+----------+------+--------+--------------+-------+
+| id|     tdate|amount|category|       product|spendby|
++---+----------+------+--------+--------------+-------+
+|  0|06-26-2011| 300.4|Exercise| GymnasticsPro|   cash|
+|  2|06-01-2011| 300.4|Exercise|Gymnastics Pro|   cash|
++---+----------+------+--------+--------------+-------+
+
+spark.sql("select * from df where category in ('Exercise','Gymnastics')").show()
+
++---+----------+------+----------+--------------+-------+
+| id|     tdate|amount|  category|       product|spendby|
++---+----------+------+----------+--------------+-------+
+|  0|06-26-2011| 300.4|  Exercise| GymnasticsPro|   cash|
+|  2|06-01-2011| 300.4|  Exercise|Gymnastics Pro|   cash|
+|  3|06-05-2011| 100.0|Gymnastics|         Rings| credit|
+|  5|02-14-2011| 200.0|Gymnastics|          NULL|   cash|
+|  6|06-05-2011| 100.0|  Exercise|         Rings| credit|
+|  8|02-14-2011| 200.0|Gymnastics|          NULL|   cash|
++---+----------+------+----------+--------------+-------+
+
+spark.sql("select * from df where product like '%Gymnastics%'").show()
++---+----------+------+--------+--------------+-------+
+| id|     tdate|amount|category|       product|spendby|
++---+----------+------+--------+--------------+-------+
+|  0|06-26-2011| 300.4|Exercise| GymnasticsPro|   cash|
+|  2|06-01-2011| 300.4|Exercise|Gymnastics Pro|   cash|
++---+----------+------+--------+--------------+-------+
+
+park.sql("select * from df where category != 'Exercise'").show()
+
++---+----------+------+-------------+-------------+-------+
+| id|     tdate|amount|     category|      product|spendby|
++---+----------+------+-------------+-------------+-------+
+|  1|05-26-2011| 200.0|Exercise Band|Weightlifting| credit|
+|  3|06-05-2011| 100.0|   Gymnastics|        Rings| credit|
+|  4|12-17-2011| 300.0|  Team Sports|        Field|   cash|
+|  5|02-14-2011| 200.0|   Gymnastics|         NULL|   cash|
+|  7|12-17-2011| 300.0|  Team Sports|        Field|   cash|
+|  8|02-14-2011| 200.0|   Gymnastics|         NULL|   cash|
++---+----------+------+-------------+-------------+-------+
+
+spark.sql("select * from df where category not in ('Exercise','Gymnastics')").show()
++---+----------+------+-------------+-------------+-------+
+| id|     tdate|amount|     category|      product|spendby|
++---+----------+------+-------------+-------------+-------+
+|  1|05-26-2011| 200.0|Exercise Band|Weightlifting| credit|
+|  4|12-17-2011| 300.0|  Team Sports|        Field|   cash|
+|  7|12-17-2011| 300.0|  Team Sports|        Field|   cash|
++---+----------+------+-------------+-------------+-------+
+
+spark.sql("select * from df where product is null").show()
++---+----------+------+----------+-------+-------+
+| id|     tdate|amount|  category|product|spendby|
++---+----------+------+----------+-------+-------+
+|  5|02-14-2011| 200.0|Gymnastics|   NULL|   cash|
+|  8|02-14-2011| 200.0|Gymnastics|   NULL|   cash|
++---+----------+------+----------+-------+-------+
+
+spark.sql("select * from df where product is not null").show()
+
++---+----------+------+-------------+--------------+-------+
+| id|     tdate|amount|     category|       product|spendby|
++---+----------+------+-------------+--------------+-------+
+|  0|06-26-2011| 300.4|     Exercise| GymnasticsPro|   cash|
+|  1|05-26-2011| 200.0|Exercise Band| Weightlifting| credit|
+|  2|06-01-2011| 300.4|     Exercise|Gymnastics Pro|   cash|
+|  3|06-05-2011| 100.0|   Gymnastics|         Rings| credit|
+|  4|12-17-2011| 300.0|  Team Sports|         Field|   cash|
+|  6|06-05-2011| 100.0|     Exercise|         Rings| credit|
+|  7|12-17-2011| 300.0|  Team Sports|         Field|   cash|
++---+----------+------+-------------+--------------+-------+
+
+spark.sql("select max(id) from df ").show()
+
++-------+
+|max(id)|
++-------+
+|      8|
++-------+
+
+park.sql("select min(id) from df ").show()
+
++-------+
+|min(id)|
++-------+
+|      0|
++-------+
+spark.sql("select count(1) from df").show()
++--------+
+|count(1)|
++--------+
+|       9|
++--------+
+
+spark.sql("select *,case when spendby='cash' then 1 else 0 end as status from df").show()
+
++---+----------+------+-------------+--------------+-------+------+
+| id|     tdate|amount|     category|       product|spendby|status|
++---+----------+------+-------------+--------------+-------+------+
+|  0|06-26-2011| 300.4|     Exercise| GymnasticsPro|   cash|     1|
+|  1|05-26-2011| 200.0|Exercise Band| Weightlifting| credit|     0|
+|  2|06-01-2011| 300.4|     Exercise|Gymnastics Pro|   cash|     1|
+|  3|06-05-2011| 100.0|   Gymnastics|         Rings| credit|     0|
+|  4|12-17-2011| 300.0|  Team Sports|         Field|   cash|     1|
+|  5|02-14-2011| 200.0|   Gymnastics|          NULL|   cash|     1|
+|  6|06-05-2011| 100.0|     Exercise|         Rings| credit|     0|
+|  7|12-17-2011| 300.0|  Team Sports|         Field|   cash|     1|
+|  8|02-14-2011| 200.0|   Gymnastics|          NULL|   cash|     1|
++---+----------+------+-------------+--------------+-------+------+
+
++---+----------+------+-------------+--------------+-------+------+
+| id|     tdate|amount|     category|       product|spendby|status|
++---+----------+------+-------------+--------------+-------+------+
+|  0|06-26-2011| 300.4|     Exercise| GymnasticsPro|   cash|     1|
+|  1|05-26-2011| 200.0|Exercise Band| Weightlifting| credit|     0|
+|  2|06-01-2011| 300.4|     Exercise|Gymnastics Pro|   cash|     1|
+|  3|06-05-2011| 100.0|   Gymnastics|         Rings| credit|     0|
+|  4|12-17-2011| 300.0|  Team Sports|         Field|   cash|     1|
+|  5|02-14-2011| 200.0|   Gymnastics|          NULL|   cash|     1|
+|  6|06-05-2011| 100.0|     Exercise|         Rings| credit|     0|
+|  7|12-17-2011| 300.0|  Team Sports|         Field|   cash|     1|
+|  8|02-14-2011| 200.0|   Gymnastics|          NULL|   cash|     1|
++---+----------+------+-------------+--------------+-------+------+
+
+spark.sql("select id,category,concat(id,'-',category) as condata from df").show()
++---+-------------+---------------+
+| id|     category|        condata|
++---+-------------+---------------+
+|  0|     Exercise|     0-Exercise|
+|  1|Exercise Band|1-Exercise Band|
+|  2|     Exercise|     2-Exercise|
+|  3|   Gymnastics|   3-Gymnastics|
+|  4|  Team Sports|  4-Team Sports|
+|  5|   Gymnastics|   5-Gymnastics|
+|  6|     Exercise|     6-Exercise|
+|  7|  Team Sports|  7-Team Sports|
+|  8|   Gymnastics|   8-Gymnastics|
++---+-------------+---------------+
+
+spark.sql("select id, category, product, concat(id, '-', category, '-', product) as cncat from df").show()
+
++---+-------------+--------------+--------------------+
+| id|     category|       product|               cncat|
++---+-------------+--------------+--------------------+
+|  0|     Exercise| GymnasticsPro|0-Exercise-Gymnas...|
+|  1|Exercise Band| Weightlifting|1-Exercise Band-W...|
+|  2|     Exercise|Gymnastics Pro|2-Exercise-Gymnas...|
+|  3|   Gymnastics|         Rings|  3-Gymnastics-Rings|
+|  4|  Team Sports|         Field| 4-Team Sports-Field|
+|  5|   Gymnastics|          NULL|                NULL|
+|  6|     Exercise|         Rings|    6-Exercise-Rings|
+|  7|  Team Sports|         Field| 7-Team Sports-Field|
+|  8|   Gymnastics|          NULL|                NULL|
++---+-------------+--------------+--------------------+
+
+spark.sql("select category,lower(category) as lower_category from df").show()
+
++-------------+--------------+
+|     category|lower_category|
++-------------+--------------+
+|     Exercise|      exercise|
+|Exercise Band| exercise band|
+|     Exercise|      exercise|
+|   Gymnastics|    gymnastics|
+|  Team Sports|   team sports|
+|   Gymnastics|    gymnastics|
+|     Exercise|      exercise|
+|  Team Sports|   team sports|
+|   Gymnastics|    gymnastics|
++-------------+--------------+
+
+spark.sql("select category,upper(category) as Upper_category from df").show()
++-------------+--------------+
+|     category|Upper_category|
++-------------+--------------+
+|     Exercise|      EXERCISE|
+|Exercise Band| EXERCISE BAND|
+|     Exercise|      EXERCISE|
+|   Gymnastics|    GYMNASTICS|
+|  Team Sports|   TEAM SPORTS|
+|   Gymnastics|    GYMNASTICS|
+|     Exercise|      EXERCISE|
+|  Team Sports|   TEAM SPORTS|
+|   Gymnastics|    GYMNASTICS|
++-------------+--------------+
+
+spark.sql("select amount,ceil(amount) as ceiled from df").show()
+
++------+----+
+|amount|ceil|
++------+----+
+| 300.4| 301|
+| 200.0| 200|
+| 300.4| 301|
+| 100.0| 100|
+| 300.0| 300|
+| 200.0| 200|
+| 100.0| 100|
+| 300.0| 300|
+| 200.0| 200|
++------+----+
+
+spark.sql("select amount,round(amount) as ROUND from df").show()
++------+-----+
+|amount|ROUND|
++------+-----+
+| 300.4|300.0|
+| 200.0|200.0|
+| 300.4|300.0|
+| 100.0|100.0|
+| 300.0|300.0|
+| 200.0|200.0|
+| 100.0|100.0|
+| 300.0|300.0|
+| 200.0|200.0|
++------+-----+
+spark.sql("select product,coalesce(product,'NA') as nullreo  from df").show()
+
++--------------+--------------+
+|       product|       nullrep|
++--------------+--------------+
+| GymnasticsPro| GymnasticsPro|
+| Weightlifting| Weightlifting|
+|Gymnastics Pro|Gymnastics Pro|
+|         Rings|         Rings|
+|         Field|         Field|
+|          NULL|            NA|
+|         Rings|         Rings|
+|         Field|         Field|
+|          NULL|            NA|
++--------------+--------------+
+spark.sql("select product,trim(product) as trimed  from df").show()
++--------------+--------------+
+|       product|        trimed|
++--------------+--------------+
+| GymnasticsPro| GymnasticsPro|
+| Weightlifting| Weightlifting|
+|Gymnastics Pro|Gymnastics Pro|
+|         Rings|         Rings|
+|         Field|         Field|
+|          NULL|          NULL|
+|         Rings|         Rings|
+|         Field|         Field|
+|          NULL|          NULL|
++--------------+--------------+
+
+spark.sql("select distinct category  from df").show()
+
++-------------+
+|     category|
++-------------+
+|     Exercise|
+|Exercise Band|
+|   Gymnastics|
+|  Team Sports|
++-------------+
+spark.sql("select distinct category,standby   from df").show()
+
++-------------+-------+
+|     category|spendby|
++-------------+-------+
+|     Exercise|   cash|
+|Exercise Band| credit|
+|   Gymnastics| credit|
+|  Team Sports|   cash|
+|   Gymnastics|   cash|
+|     Exercise| credit|
++-------------+-------+
+
+spark.sql("select substring(product,1,10) as sub  from df").show()
+
++----------+
+|       sub|
++----------+
+|Gymnastics|
+|Weightlift|
+|Gymnastics|
+|     Rings|
+|     Field|
+|      NULL|
+|     Rings|
+|     Field|
+|      NULL|
++----------+
+
+spark.sql("select product,split(product,' ')[0] as split  from df").show()
+
++--------------+-----+
+|       product|split|
++--------------+-----+
+| GymnasticsPro|    G|
+| Weightlifting|    W|
+|Gymnastics Pro|    G|
+|         Rings|    R|
+|         Field|    F|
+|          NULL| NULL|
+|         Rings|    R|
+|         Field|    F|
+|          NULL| NULL|
++--------------+-----+
+
+
+spark.sql("select *  from df union all select * from df1").show()
+
++---+----------+------+-------------+--------------+-------+
+| id|     tdate|amount|     category|       product|spendby|
++---+----------+------+-------------+--------------+-------+
+|  0|06-26-2011| 300.4|     Exercise| GymnasticsPro|   cash|
+|  1|05-26-2011| 200.0|Exercise Band| Weightlifting| credit|
+|  2|06-01-2011| 300.4|     Exercise|Gymnastics Pro|   cash|
+|  3|06-05-2011| 100.0|   Gymnastics|         Rings| credit|
+|  4|12-17-2011| 300.0|  Team Sports|         Field|   cash|
+|  5|02-14-2011| 200.0|   Gymnastics|          NULL|   cash|
+|  6|06-05-2011| 100.0|     Exercise|         Rings| credit|
+|  7|12-17-2011| 300.0|  Team Sports|         Field|   cash|
+|  8|02-14-2011| 200.0|   Gymnastics|          NULL|   cash|
+|  4|12-17-2011| 300.0|  Team Sports|         Field|   cash|
+|  5|02-14-2011| 200.0|   Gymnastics|          NULL|   cash|
+|  6|02-14-2011| 200.0|       Winter|          NULL|   cash|
+|  7|02-14-2011| 200.0|       Winter|          NULL|   cash|
++---+----------+------+-------------+--------------+-------+
+
+spark.sql("select *  from df union select * from df1").show()
+
++---+----------+------+-------------+--------------+-------+
+| id|     tdate|amount|     category|       product|spendby|
++---+----------+------+-------------+--------------+-------+
+|  0|06-26-2011| 300.4|     Exercise| GymnasticsPro|   cash|
+|  1|05-26-2011| 200.0|Exercise Band| Weightlifting| credit|
+|  2|06-01-2011| 300.4|     Exercise|Gymnastics Pro|   cash|
+|  3|06-05-2011| 100.0|   Gymnastics|         Rings| credit|
+|  4|12-17-2011| 300.0|  Team Sports|         Field|   cash|
+|  6|06-05-2011| 100.0|     Exercise|         Rings| credit|
+|  7|12-17-2011| 300.0|  Team Sports|         Field|   cash|
+|  5|02-14-2011| 200.0|   Gymnastics|          NULL|   cash|
+|  8|02-14-2011| 200.0|   Gymnastics|          NULL|   cash|
+|  6|02-14-2011| 200.0|       Winter|          NULL|   cash|
+|  7|02-14-2011| 200.0|       Winter|          NULL|   cash|
++---+----------+------+-------------+--------------+-------+
+
+spark.sql("select category, sum(amount) from df group by category").show()
+
++-------------+-----+
+|     category|  sum|
++-------------+-----+
+|     Exercise|700.8|
+|Exercise Band|200.0|
+|   Gymnastics|500.0|
+|  Team Sports|600.0|
++-------------+-----+
+
+spark.sql("select category,spendby, sum(amount),count(amount) as count from df group by category,spendby").show()
+
++-------------+-------+-----------+-----+
+|     category|spendby|sum(amount)|count|
++-------------+-------+-----------+-----+
+|   Gymnastics|   cash|      400.0|    2|
+|     Exercise|   cash|      600.8|    2|
+|     Exercise| credit|      100.0|    1|
+|  Team Sports|   cash|      600.0|    2|
+|Exercise Band| credit|      200.0|    1|
+|   Gymnastics| credit|      100.0|    1|
++-------------+-------+-----------+-----+
+
+
++-------------+-----+
+|     category|  sum|
++-------------+-----+
+|     Exercise|300.4|
+|Exercise Band|200.0|
+|   Gymnastics|200.0|
+|  Team Sports|300.0|
++-------------+-----+
+
+spark.sql("select category,amount,row_number()OVER(partition by category order by amount desc) as row_number from df ").show()
+
++-------------+------+----------+
+|     category|amount|row_number|
++-------------+------+----------+
+|     Exercise| 300.4|         1|
+|     Exercise| 300.4|         2|
+|     Exercise| 100.0|         3|
+|Exercise Band| 200.0|         1|
+|   Gymnastics| 200.0|         1|
+|   Gymnastics| 200.0|         2|
+|   Gymnastics| 100.0|         3|
+|  Team Sports| 300.0|         1|
+|  Team Sports| 300.0|         2|
++-------------+------+----------+
+spark.sql("select category,amount,dense_rank()OVER(partition by category order by amount desc) as Dense_rank from df ").show()
+
++-------------+------+----------+
+|     category|amount|dense_rank|
++-------------+------+----------+
+|     Exercise| 300.4|         1|
+|     Exercise| 300.4|         1|
+|     Exercise| 100.0|         2|
+|Exercise Band| 200.0|         1|
+|   Gymnastics| 200.0|         1|
+|   Gymnastics| 200.0|         1|
+|   Gymnastics| 100.0|         2|
+|  Team Sports| 300.0|         1|
+|  Team Sports| 300.0|         1|
++-------------+------+----------+
+
+spark.sql("select category,amount,lead(amount) OVER(partition by category order by amount desc) as lead from df ").show()
++-------------+------+-----+
+|     category|amount| lead|
++-------------+------+-----+
+|     Exercise| 300.4|300.4|
+|     Exercise| 300.4|100.0|
+|     Exercise| 100.0| NULL|
+|Exercise Band| 200.0| NULL|
+|   Gymnastics| 200.0|200.0|
+|   Gymnastics| 200.0|100.0|
+|   Gymnastics| 100.0| NULL|
+|  Team Sports| 300.0|300.0|
+|  Team Sports| 300.0| NULL|
++-------------+------+-----+
+
+spark.sql("SELECT category,amount, lag(amount) OVER ( par on by category order by amount desc ) AS lag FROM df").show()
++-------------+------+-----+
+|     category|amount|  lag|
++-------------+------+-----+
+|     Exercise| 300.4| NULL|
+|     Exercise| 300.4|300.4|
+|     Exercise| 100.0|300.4|
+|Exercise Band| 200.0| NULL|
+|   Gymnastics| 200.0| NULL|
+|   Gymnastics| 200.0|200.0|
+|   Gymnastics| 100.0|200.0|
+|  Team Sports| 300.0| NULL|
+|  Team Sports| 300.0|300.0|
++-------------+------+-----+
+
+park.sql("select category,count(category) as cnt from df group by category having count(category)>1").show()
++-----------+-----+
+|   category|cnt  |
++-----------+-----+
+|   Exercise|    3|
+| Gymnastics|    3|
+|Team Sports|    2|
++-----------+-----+
+
+spark.sql("select a.id,a.name,b.product from cust a join prod b on a.id=b.id").show()
++---+----+-------+
+| id|name|product|
++---+----+-------+
+|  1| raj|  mouse|
+|  3| sai| mobile|
++---+----+-------+
+spark.sql("select a.id,a.name,b.product from cust a le join prod b on
+a.id=b.id").show()
++---+----+-------+
+| id|name|product|
++---+----+-------+
+|  1| raj|  mouse|
+|  2|ravi|   NULL|
+|  3| sai| mobile|
+|  5|rani|   NULL|
++---+----+-------+
+
+spark.sql("select a.id,a.name,b.product from cust a right join prod b on a.id=b.id").show()
++----+----+-------+
+|  id|name|product|
++----+----+-------+
+|   1| raj|  mouse|
+|   3| sai| mobile|
+|NULL|NULL| laptop|
++----+----+-------+
+
+spark.sql("select a.id,a.name,b.product from cust a full join prod b on a.id=b.id").show()
++----+----+-------+
+|  id|name|product|
++----+----+-------+
+|   1| raj|  mouse|
+|   2|ravi|   NULL|
+|   3| sai| mobile|
+|   5|rani|   NULL|
+|NULL|NULL| laptop|
++----+----+-------+
+
+
+park.sql("select a.id,a.name from cust a LEFT ANTI JOIN prod b on
+a.id=b.id").show()
++---+----+
+| id|name|
++---+----+
+|  2|ravi|
+|  5|rani|
++---+----+
+
+spark.sql("select id,tdate,from_unix me(unix_ mestamp(tdate,'MM-dd-yyyy'),'yyyy-MM-dd') as con_date from df").show()
+
++---+----------+----------+
+| id|     tdate|  con_date|
++---+----------+----------+
+|  0|06-26-2011|2011-06-26|
+|  1|05-26-2011|2011-05-26|
+|  2|06-01-2011|2011-06-01|
+|  3|06-05-2011|2011-06-05|
+|  4|12-17-2011|2011-12-17|
+|  5|02-14-2011|2011-02-14|
+|  6|06-05-2011|2011-06-05|
+|  7|12-17-2011|2011-12-17|
+|  8|02-14-2011|2011-02-14|
++---+----------+----------+
+
+
+Process finished with exit code 0
