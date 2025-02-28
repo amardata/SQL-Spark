@@ -16,33 +16,7 @@ df.createOrReplaceTempView("df")
 |  8|02-14-2011| 200.0|   Gymnastics|          NULL|   cash|
 +---+----------+------+-------------+--------------+-------+
 
-+---+----------+------+-----------+-------+-------+
-| id|     tdate|amount|   category|product|spendby|
-+---+----------+------+-----------+-------+-------+
-|  4|12-17-2011| 300.0|Team Sports|  Field|   cash|
-|  5|02-14-2011| 200.0| Gymnastics|   NULL|   cash|
-|  6|02-14-2011| 200.0|     Winter|   NULL|   cash|
-|  7|02-14-2011| 200.0|     Winter|   NULL|   cash|
-+---+----------+------+-----------+-------+-------+
-
-+---+----+
-| id|name|
-+---+----+
-|  1| raj|
-|  2|ravi|
-|  3| sai|
-|  5|rani|
-+---+----+
-
-+---+-------+
-| id|product|
-+---+-------+
-|  1|  mouse|
-|  3| mobile|
-|  7| laptop|
-+---+-------+
-
----- Task with result -----started -----
+---- Task with result -----started -----------------------------------
 
 spark.sql("select id,tdate from df").show()
 
@@ -317,6 +291,7 @@ spark.sql("select product,trim(product) as trimed  from df").show()
 |          NULL|          NULL|
 +--------------+--------------+
 
+spark.sql("select distinct category  from df").show()
 
 +-------------+
 |     category|
@@ -326,6 +301,7 @@ spark.sql("select product,trim(product) as trimed  from df").show()
 |   Gymnastics|
 |  Team Sports|
 +-------------+
+spark.sql("select distinct category,standby   from df").show()
 
 +-------------+-------+
 |     category|spendby|
@@ -337,6 +313,8 @@ spark.sql("select product,trim(product) as trimed  from df").show()
 |   Gymnastics|   cash|
 |     Exercise| credit|
 +-------------+-------+
+
+spark.sql("select substring(product,1,10) as sub  from df").show()
 
 +----------+
 |       sub|
@@ -352,6 +330,8 @@ spark.sql("select product,trim(product) as trimed  from df").show()
 |      NULL|
 +----------+
 
+spark.sql("select product,split(product,' ')[0] as split  from df").show()
+
 +--------------+-----+
 |       product|split|
 +--------------+-----+
@@ -366,6 +346,9 @@ spark.sql("select product,trim(product) as trimed  from df").show()
 |          NULL| NULL|
 +--------------+-----+
 
+
+spark.sql("select *  from df union all select * from df1").show()
+
 +---+----------+------+-------------+--------------+-------+
 | id|     tdate|amount|     category|       product|spendby|
 +---+----------+------+-------------+--------------+-------+
@@ -384,6 +367,8 @@ spark.sql("select product,trim(product) as trimed  from df").show()
 |  7|02-14-2011| 200.0|       Winter|          NULL|   cash|
 +---+----------+------+-------------+--------------+-------+
 
+spark.sql("select *  from df union select * from df1").show()
+
 +---+----------+------+-------------+--------------+-------+
 | id|     tdate|amount|     category|       product|spendby|
 +---+----------+------+-------------+--------------+-------+
@@ -399,6 +384,8 @@ spark.sql("select product,trim(product) as trimed  from df").show()
 |  6|02-14-2011| 200.0|       Winter|          NULL|   cash|
 |  7|02-14-2011| 200.0|       Winter|          NULL|   cash|
 +---+----------+------+-------------+--------------+-------+
+
+spark.sql("select category, sum(amount) from df group by category").show()
 
 +-------------+-----+
 |     category|  sum|
@@ -409,25 +396,19 @@ spark.sql("select product,trim(product) as trimed  from df").show()
 |  Team Sports|600.0|
 +-------------+-----+
 
-+-------------+-------+-----+
-|     category|spendby|  sum|
-+-------------+-------+-----+
-|     Exercise|   cash|600.8|
-|Exercise Band| credit|200.0|
-|   Gymnastics| credit|100.0|
-|  Team Sports|   cash|600.0|
-|   Gymnastics|   cash|400.0|
-|     Exercise| credit|100.0|
-+-------------+-------+-----+
+spark.sql("select category,spendby, sum(amount),count(amount) as count from df group by category,spendby").show()
 
-+-------------+-----+---+
-|     category|  sum|cnt|
-+-------------+-----+---+
-|     Exercise|700.8|  3|
-|Exercise Band|200.0|  1|
-|   Gymnastics|500.0|  3|
-|  Team Sports|600.0|  2|
-+-------------+-----+---+
++-------------+-------+-----------+-----+
+|     category|spendby|sum(amount)|count|
++-------------+-------+-----------+-----+
+|   Gymnastics|   cash|      400.0|    2|
+|     Exercise|   cash|      600.8|    2|
+|     Exercise| credit|      100.0|    1|
+|  Team Sports|   cash|      600.0|    2|
+|Exercise Band| credit|      200.0|    1|
+|   Gymnastics| credit|      100.0|    1|
++-------------+-------+-----------+-----+
+
 
 +-------------+-----+
 |     category|  sum|
@@ -437,6 +418,8 @@ spark.sql("select product,trim(product) as trimed  from df").show()
 |   Gymnastics|200.0|
 |  Team Sports|300.0|
 +-------------+-----+
+
+spark.sql("select category,amount,row_number()OVER(partition by category order by amount desc) as row_number from df ").show()
 
 +-------------+------+----------+
 |     category|amount|row_number|
@@ -451,6 +434,7 @@ spark.sql("select product,trim(product) as trimed  from df").show()
 |  Team Sports| 300.0|         1|
 |  Team Sports| 300.0|         2|
 +-------------+------+----------+
+spark.sql("select category,amount,dense_rank()OVER(partition by category order by amount desc) as Dense_rank from df ").show()
 
 +-------------+------+----------+
 |     category|amount|dense_rank|
@@ -466,20 +450,7 @@ spark.sql("select product,trim(product) as trimed  from df").show()
 |  Team Sports| 300.0|         1|
 +-------------+------+----------+
 
-+-------------+------+----+
-|     category|amount|rank|
-+-------------+------+----+
-|     Exercise| 300.4|   1|
-|     Exercise| 300.4|   1|
-|     Exercise| 100.0|   3|
-|Exercise Band| 200.0|   1|
-|   Gymnastics| 200.0|   1|
-|   Gymnastics| 200.0|   1|
-|   Gymnastics| 100.0|   3|
-|  Team Sports| 300.0|   1|
-|  Team Sports| 300.0|   1|
-+-------------+------+----+
-
+spark.sql("select category,amount,lead(amount) OVER(partition by category order by amount desc) as lead from df ").show()
 +-------------+------+-----+
 |     category|amount| lead|
 +-------------+------+-----+
@@ -494,6 +465,7 @@ spark.sql("select product,trim(product) as trimed  from df").show()
 |  Team Sports| 300.0| NULL|
 +-------------+------+-----+
 
+spark.sql("SELECT category,amount, lag(amount) OVER ( par on by category order by amount desc ) AS lag FROM df").show()
 +-------------+------+-----+
 |     category|amount|  lag|
 +-------------+------+-----+
@@ -508,21 +480,24 @@ spark.sql("select product,trim(product) as trimed  from df").show()
 |  Team Sports| 300.0|300.0|
 +-------------+------+-----+
 
+park.sql("select category,count(category) as cnt from df group by category having count(category)>1").show()
 +-----------+-----+
-|   category|count|
+|   category|cnt  |
 +-----------+-----+
 |   Exercise|    3|
 | Gymnastics|    3|
 |Team Sports|    2|
 +-----------+-----+
 
+spark.sql("select a.id,a.name,b.product from cust a join prod b on a.id=b.id").show()
 +---+----+-------+
 | id|name|product|
 +---+----+-------+
 |  1| raj|  mouse|
 |  3| sai| mobile|
 +---+----+-------+
-
+spark.sql("select a.id,a.name,b.product from cust a le join prod b on
+a.id=b.id").show()
 +---+----+-------+
 | id|name|product|
 +---+----+-------+
@@ -532,6 +507,7 @@ spark.sql("select product,trim(product) as trimed  from df").show()
 |  5|rani|   NULL|
 +---+----+-------+
 
+spark.sql("select a.id,a.name,b.product from cust a right join prod b on a.id=b.id").show()
 +----+----+-------+
 |  id|name|product|
 +----+----+-------+
@@ -540,6 +516,7 @@ spark.sql("select product,trim(product) as trimed  from df").show()
 |NULL|NULL| laptop|
 +----+----+-------+
 
+spark.sql("select a.id,a.name,b.product from cust a full join prod b on a.id=b.id").show()
 +----+----+-------+
 |  id|name|product|
 +----+----+-------+
@@ -550,12 +527,17 @@ spark.sql("select product,trim(product) as trimed  from df").show()
 |NULL|NULL| laptop|
 +----+----+-------+
 
+
+park.sql("select a.id,a.name from cust a LEFT ANTI JOIN prod b on
+a.id=b.id").show()
 +---+----+
 | id|name|
 +---+----+
 |  2|ravi|
 |  5|rani|
 +---+----+
+
+spark.sql("select id,tdate,from_unix me(unix_ mestamp(tdate,'MM-dd-yyyy'),'yyyy-MM-dd') as con_date from df").show()
 
 +---+----------+----------+
 | id|     tdate|  con_date|
@@ -570,17 +552,6 @@ spark.sql("select product,trim(product) as trimed  from df").show()
 |  7|12-17-2011|2011-12-17|
 |  8|02-14-2011|2011-02-14|
 +---+----------+----------+
-
-+-----+----------+
-|total|  con_date|
-+-----+----------+
-|300.4|2011-06-26|
-|200.0|2011-05-26|
-|300.4|2011-06-01|
-|200.0|2011-06-05|
-|600.0|2011-12-17|
-|400.0|2011-02-14|
-+-----+----------+
 
 
 Process finished with exit code 0
