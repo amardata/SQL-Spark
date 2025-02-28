@@ -1,4 +1,7 @@
-STARTED=============
+=====================STARTED FROM HERE =============
+
+df.createOrReplaceTempView("df")
+
 +---+----------+------+-------------+--------------+-------+
 | id|     tdate|amount|     category|       product|spendby|
 +---+----------+------+-------------+--------------+-------+
@@ -39,6 +42,10 @@ STARTED=============
 |  7| laptop|
 +---+-------+
 
+---- Task with result -----started -----
+
+spark.sql("select id,tdate from df").show()
+
 +---+----------+
 | id|     tdate|
 +---+----------+
@@ -53,6 +60,7 @@ STARTED=============
 |  8|02-14-2011|
 +---+----------+
 
+spark.sql("select * from df where category=’Exercise’").show()
 +---+----------+------+--------+--------------+-------+
 | id|     tdate|amount|category|       product|spendby|
 +---+----------+------+--------+--------------+-------+
@@ -61,12 +69,16 @@ STARTED=============
 |  6|06-05-2011| 100.0|Exercise|         Rings| credit|
 +---+----------+------+--------+--------------+-------+
 
+spark.sql("select id,tdate,category,spendby from df where category='Exercise' and spendby ='cash' ").show()
+
 +---+----------+------+--------+--------------+-------+
 | id|     tdate|amount|category|       product|spendby|
 +---+----------+------+--------+--------------+-------+
 |  0|06-26-2011| 300.4|Exercise| GymnasticsPro|   cash|
 |  2|06-01-2011| 300.4|Exercise|Gymnastics Pro|   cash|
 +---+----------+------+--------+--------------+-------+
+
+spark.sql("select * from df where category in ('Exercise','Gymnastics')").show()
 
 +---+----------+------+----------+--------------+-------+
 | id|     tdate|amount|  category|       product|spendby|
@@ -79,12 +91,15 @@ STARTED=============
 |  8|02-14-2011| 200.0|Gymnastics|          NULL|   cash|
 +---+----------+------+----------+--------------+-------+
 
+spark.sql("select * from df where product like '%Gymnastics%'").show()
 +---+----------+------+--------+--------------+-------+
 | id|     tdate|amount|category|       product|spendby|
 +---+----------+------+--------+--------------+-------+
 |  0|06-26-2011| 300.4|Exercise| GymnasticsPro|   cash|
 |  2|06-01-2011| 300.4|Exercise|Gymnastics Pro|   cash|
 +---+----------+------+--------+--------------+-------+
+
+park.sql("select * from df where category != 'Exercise'").show()
 
 +---+----------+------+-------------+-------------+-------+
 | id|     tdate|amount|     category|      product|spendby|
@@ -97,6 +112,7 @@ STARTED=============
 |  8|02-14-2011| 200.0|   Gymnastics|         NULL|   cash|
 +---+----------+------+-------------+-------------+-------+
 
+spark.sql("select * from df where category not in ('Exercise','Gymnastics')").show()
 +---+----------+------+-------------+-------------+-------+
 | id|     tdate|amount|     category|      product|spendby|
 +---+----------+------+-------------+-------------+-------+
@@ -105,6 +121,7 @@ STARTED=============
 |  7|12-17-2011| 300.0|  Team Sports|        Field|   cash|
 +---+----------+------+-------------+-------------+-------+
 
+spark.sql("select * from df where product is null").show()
 +---+----------+------+----------+-------+-------+
 | id|     tdate|amount|  category|product|spendby|
 +---+----------+------+----------+-------+-------+
@@ -112,31 +129,43 @@ STARTED=============
 |  8|02-14-2011| 200.0|Gymnastics|   NULL|   cash|
 +---+----------+------+----------+-------+-------+
 
+spark.sql("select * from df where product is not null").show()
+
++---+----------+------+-------------+--------------+-------+
+| id|     tdate|amount|     category|       product|spendby|
++---+----------+------+-------------+--------------+-------+
+|  0|06-26-2011| 300.4|     Exercise| GymnasticsPro|   cash|
+|  1|05-26-2011| 200.0|Exercise Band| Weightlifting| credit|
+|  2|06-01-2011| 300.4|     Exercise|Gymnastics Pro|   cash|
+|  3|06-05-2011| 100.0|   Gymnastics|         Rings| credit|
+|  4|12-17-2011| 300.0|  Team Sports|         Field|   cash|
+|  6|06-05-2011| 100.0|     Exercise|         Rings| credit|
+|  7|12-17-2011| 300.0|  Team Sports|         Field|   cash|
++---+----------+------+-------------+--------------+-------+
+
+spark.sql("select max(id) from df ").show()
+
 +-------+
 |max(id)|
 +-------+
 |      8|
 +-------+
 
+park.sql("select min(id) from df ").show()
+
++-------+
+|min(id)|
++-------+
+|      0|
++-------+
+spark.sql("select count(1) from df").show()
 +--------+
 |count(1)|
 +--------+
 |       9|
 +--------+
 
-+---+----------+------+-------------+--------------+-------+------+
-| id|     tdate|amount|     category|       product|spendby|status|
-+---+----------+------+-------------+--------------+-------+------+
-|  0|06-26-2011| 300.4|     Exercise| GymnasticsPro|   cash|     1|
-|  1|05-26-2011| 200.0|Exercise Band| Weightlifting| credit|     0|
-|  2|06-01-2011| 300.4|     Exercise|Gymnastics Pro|   cash|     1|
-|  3|06-05-2011| 100.0|   Gymnastics|         Rings| credit|     0|
-|  4|12-17-2011| 300.0|  Team Sports|         Field|   cash|     1|
-|  5|02-14-2011| 200.0|   Gymnastics|          NULL|   cash|     1|
-|  6|06-05-2011| 100.0|     Exercise|         Rings| credit|     0|
-|  7|12-17-2011| 300.0|  Team Sports|         Field|   cash|     1|
-|  8|02-14-2011| 200.0|   Gymnastics|          NULL|   cash|     1|
-+---+----------+------+-------------+--------------+-------+------+
+spark.sql("select *,case when spendby='cash' then 1 else 0 end as status from df").show()
 
 +---+----------+------+-------------+--------------+-------+------+
 | id|     tdate|amount|     category|       product|spendby|status|
@@ -152,6 +181,21 @@ STARTED=============
 |  8|02-14-2011| 200.0|   Gymnastics|          NULL|   cash|     1|
 +---+----------+------+-------------+--------------+-------+------+
 
++---+----------+------+-------------+--------------+-------+------+
+| id|     tdate|amount|     category|       product|spendby|status|
++---+----------+------+-------------+--------------+-------+------+
+|  0|06-26-2011| 300.4|     Exercise| GymnasticsPro|   cash|     1|
+|  1|05-26-2011| 200.0|Exercise Band| Weightlifting| credit|     0|
+|  2|06-01-2011| 300.4|     Exercise|Gymnastics Pro|   cash|     1|
+|  3|06-05-2011| 100.0|   Gymnastics|         Rings| credit|     0|
+|  4|12-17-2011| 300.0|  Team Sports|         Field|   cash|     1|
+|  5|02-14-2011| 200.0|   Gymnastics|          NULL|   cash|     1|
+|  6|06-05-2011| 100.0|     Exercise|         Rings| credit|     0|
+|  7|12-17-2011| 300.0|  Team Sports|         Field|   cash|     1|
+|  8|02-14-2011| 200.0|   Gymnastics|          NULL|   cash|     1|
++---+----------+------+-------------+--------------+-------+------+
+
+spark.sql("select id,category,concat(id,'-',category) as condata from df").show()
 +---+-------------+---------------+
 | id|     category|        condata|
 +---+-------------+---------------+
@@ -166,8 +210,10 @@ STARTED=============
 |  8|   Gymnastics|   8-Gymnastics|
 +---+-------------+---------------+
 
+spark.sql("select id, category, product, concat(id, '-', category, '-', product) as cncat from df").show()
+
 +---+-------------+--------------+--------------------+
-| id|     category|       product|             condata|
+| id|     category|       product|               cncat|
 +---+-------------+--------------+--------------------+
 |  0|     Exercise| GymnasticsPro|0-Exercise-Gymnas...|
 |  1|Exercise Band| Weightlifting|1-Exercise Band-W...|
@@ -180,19 +226,7 @@ STARTED=============
 |  8|   Gymnastics|          NULL|                NULL|
 +---+-------------+--------------+--------------------+
 
-+---+-------------+--------------+--------------------+
-| id|     category|       product|             condata|
-+---+-------------+--------------+--------------------+
-|  0|     Exercise| GymnasticsPro|0-Exercise-Gymnas...|
-|  1|Exercise Band| Weightlifting|1-Exercise Band-W...|
-|  2|     Exercise|Gymnastics Pro|2-Exercise-Gymnas...|
-|  3|   Gymnastics|         Rings|  3-Gymnastics-Rings|
-|  4|  Team Sports|         Field| 4-Team Sports-Field|
-|  5|   Gymnastics|          NULL|        5-Gymnastics|
-|  6|     Exercise|         Rings|    6-Exercise-Rings|
-|  7|  Team Sports|         Field| 7-Team Sports-Field|
-|  8|   Gymnastics|          NULL|        8-Gymnastics|
-+---+-------------+--------------+--------------------+
+spark.sql("select category,lower(category) as lower_category from df").show()
 
 +-------------+--------------+
 |     category|lower_category|
@@ -208,8 +242,9 @@ STARTED=============
 |   Gymnastics|    gymnastics|
 +-------------+--------------+
 
+spark.sql("select category,upper(category) as Upper_category from df").show()
 +-------------+--------------+
-|     category|lower_category|
+|     category|Upper_category|
 +-------------+--------------+
 |     Exercise|      EXERCISE|
 |Exercise Band| EXERCISE BAND|
@@ -221,6 +256,8 @@ STARTED=============
 |  Team Sports|   TEAM SPORTS|
 |   Gymnastics|    GYMNASTICS|
 +-------------+--------------+
+
+spark.sql("select amount,ceil(amount) as ceiled from df").show()
 
 +------+----+
 |amount|ceil|
@@ -236,6 +273,7 @@ STARTED=============
 | 200.0| 200|
 +------+----+
 
+spark.sql("select amount,round(amount) as ROUND from df").show()
 +------+-----+
 |amount|ROUND|
 +------+-----+
@@ -249,6 +287,7 @@ STARTED=============
 | 300.0|300.0|
 | 200.0|200.0|
 +------+-----+
+spark.sql("select product,coalesce(product,'NA') as nullreo  from df").show()
 
 +--------------+--------------+
 |       product|       nullrep|
@@ -263,20 +302,21 @@ STARTED=============
 |         Field|         Field|
 |          NULL|            NA|
 +--------------+--------------+
+spark.sql("select product,trim(product) as trimed  from df").show()
++--------------+--------------+
+|       product|        trimed|
++--------------+--------------+
+| GymnasticsPro| GymnasticsPro|
+| Weightlifting| Weightlifting|
+|Gymnastics Pro|Gymnastics Pro|
+|         Rings|         Rings|
+|         Field|         Field|
+|          NULL|          NULL|
+|         Rings|         Rings|
+|         Field|         Field|
+|          NULL|          NULL|
++--------------+--------------+
 
-+--------------+
-|   trimproduct|
-+--------------+
-| GymnasticsPro|
-| Weightlifting|
-|Gymnastics Pro|
-|         Rings|
-|         Field|
-|          NULL|
-|         Rings|
-|         Field|
-|          NULL|
-+--------------+
 
 +-------------+
 |     category|
