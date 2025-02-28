@@ -72,9 +72,9 @@ df = spark.createDataFrame(data, ["id", "tdate", "amount", "category", "product"
 df.show()
 
 
-
-
-
+#
+#
+#
 data2 = [
     (4, "12-17-2011", 300.0, "Team Sports", "Field", "cash"),
     (5, "02-14-2011", 200.0, "Gymnastics", None, "cash"),
@@ -114,3 +114,51 @@ df.createOrReplaceTempView("df")
 df1.createOrReplaceTempView("df1")
 cust.createOrReplaceTempView("cust")
 prod.createOrReplaceTempView("prod")
+
+#  #################s  tarting  #####
+spark.sql("select id,tdate from df").show()
+spark.sql("select * from df where category = 'Exercise' ").show()
+spark.sql("select id, tdate, category, spendby from df where category = 'Exercise' and spendby = 'cash' ").show()
+spark.sql("select * from df where category in ('Exercise','Gymnastics')").show()
+spark.sql("select * from df where product like '%Gymnastics%'").show()
+spark.sql("select * from df where category != 'Exercise'").show()
+spark.sql("select * from df where category not in ('Exercise','Gymnastics')").show()
+spark.sql("select * from df where product is null").show()
+spark.sql("select * from df where product is not null").show()
+spark.sql("select max(id) from df ").show()
+spark.sql("select min(id) from df ").show()
+spark.sql("select count(1) from df").show()
+spark.sql("select *,case when spendby='cash' then 1 else 0 end as status from df").show()
+
+spark.sql("select id,category,concat(id,'-',category) as condata from df").show()
+
+spark.sql("select id, category, product, concat(id, '-', category, '-', product) as cncat from df").show()
+
+spark.sql("select category,lower(category) as lower_category from df").show()
+spark.sql("select amount,ceil(amount) as ceiled from df").show()
+spark.sql("select amount,round(amount) as ROUND from df").show()
+spark.sql("select product,coalesce(product,'NA') as nullreo  from df").show()
+spark.sql("select product,trim(product) as trimed  from df").show()
+
+spark.sql("select distinct category  from df").show()
+spark.sql("select distinct category,standby   from df").show()
+
+spark.sql("select substring(product,1,10) as sub  from df").show()
+spark.sql("select product,split(product,' ')[0] as split  from df").show()
+spark.sql("select *  from df union all select * from df1").show()
+spark.sql("select *  from df union select * from df1").show()
+spark.sql("select category, sum(amount) from df group by category").show()
+
+spark.sql("select category,spendby, sum(amount),count(amount) as count from df group by category,spendby").show()
+spark.sql("select category,spendby, sum(amount),count(amount) as count from df group by category,spendby").show()
+spark.sql("select category,amount,row_number()OVER(partition by category order by amount desc) as row_number from df ").show()
+
+spark.sql("SELECT category,amount, lag(amount) OVER ( par on by category order by amount desc ) AS lag FROM df").show()
+spark.sql("select category,count(category) as cnt from df group by category having count(category)>1").show()
+
+spark.sql("select a.id,a.name,b.product from cust a join prod b on a.id=b.id").show()
+spark.sql("select a.id,a.name,b.product from cust a le join prod b on a.id=b.id").show()
+spark.sql("select a.id,a.name,b.product from cust a right join prod b on a.id=b.id").show()
+spark.sql("select a.id,a.name,b.product from cust a full join prod b on a.id=b.id").show()
+spark.sql("select a.id,a.name from cust a LEFT ANTI JOIN prod b on a.id=b.id").show()
+spark.sql("select id,tdate,from_unix me(unix_ mestamp(tdate,'MM-dd-yyyy'),'yyyy-MM-dd') as con_date from df").show()
